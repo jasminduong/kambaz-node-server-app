@@ -29,7 +29,7 @@ if (process.env.NODE_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "lax",
     secure: true,
-    domain: process.env.NODE_SERVER_DOMAIN,
+    domain: "onrender.com",
   };
 }
 app.use(session(sessionOptions));
