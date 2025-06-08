@@ -31,7 +31,7 @@ if (process.env.NODE_ENV !== "development") {
   // in production turn on proxy support configure cookies for remote server
   sessionOptions.proxy = true;
   sessionOptions.cookie = {
-    sameSite: "lax",
+    sameSite: "none",
     secure: true,
   };
 }
