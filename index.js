@@ -11,11 +11,15 @@ import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kambaz/Enrollments/routes.js";
 
 const app = express();
+const allowedOrigins = [
+  "https://jasminduong-kambaz.netlify.app",
+  "http://localhost:5173",
+];
 app.use(
   cors({
     // governs the policies and mechanisms of how various resources can be shared across different domains or origins
     credentials: true, // support cookies
-    origin: process.env.NETLIFY_URL || "http://localhost:5173", // use different front end URL in dev and in production
+    origin: allowedOrigins // use different front end URL in dev and in production
   })
 );
 const sessionOptions = {
@@ -29,7 +33,6 @@ if (process.env.NODE_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "lax",
     secure: true,
-    domain: "onrender.com",
   };
 }
 app.use(session(sessionOptions));
