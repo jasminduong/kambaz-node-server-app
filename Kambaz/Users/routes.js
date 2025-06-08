@@ -10,7 +10,22 @@ function event handlers that are part of the client/server architecture in a mul
 export default function UserRoutes(app) {
   const createUser = (req, res) => {};
   const deleteUser = (req, res) => {};
-  const findAllUsers = (req, res) => {};
+  // uses findAllUsers function implemented by the DAO to retrieve all the users from the database
+  const findAllUsers = async (req, res) => {
+    const { role, name } = req.query;
+    if (role) {
+      const users = await dao.findUsersByRole(role);
+      res.json(users);
+      return;
+    }
+    if (name) {
+      const users = await dao.findUsersByPartialName(name);
+      res.json(users);
+      return;
+    }
+    const users = await dao.findAllUsers();
+    res.json(users);
+  };
   const findUserById = (req, res) => {};
 
   app.post("/api/users", createUser);
@@ -19,22 +34,22 @@ export default function UserRoutes(app) {
   app.delete("/api/users/:userId", deleteUser);
 
   // SIGNUP - creates new user
-  const signup = (req, res) => {
-    const user = dao.findUserByUsername(req.body.username); // checks if a user with that username already exists
+  const signup = async (req, res) => {
+    const user = await dao.findUserByUsername(req.body.username); // checks if a user with that username already exists
     if (user) {
       res.status(400).json({ message: "Username already in use" }); // returns a 400 error status if user exists
       return;
     }
-    const currentUser = dao.createUser(req.body); // if the username is not already taken, store it in the session's currentUser property
+    const currentUser = await dao.createUser(req.body); // if the username is not already taken, store it in the session's currentUser property
     req.session["currentUser"] = currentUser; // to remember that this new user is now the currently logged-in user
     res.json(currentUser); // the response includes the newly created user
   };
   app.post("/api/users/signup", signup);
 
   // SIGNIN - logs in the user if credentials match
-  const signin = (req, res) => {
+  const signin = async (req, res) => {
     const { username, password } = req.body; // extracts properties username and password from the request's body
-    const currentUser = dao.findUserByCredentials(username, password); // and passess them to the findUserByCredentials function implemented by the DAO
+    const currentUser = await dao.findUserByCredentials(username, password); // and passess them to the findUserByCredentials function implemented by the DAO
     if (currentUser) {
       req.session["currentUser"] = currentUser; // the resulting user is stored in the server's currentUser  session
       res.json(currentUser); // the user is then sent to the client in the response
@@ -58,11 +73,11 @@ export default function UserRoutes(app) {
   app.post("/api/users/profile", profile);
 
   // UPDATE - updates current user's profile
-  const updateUser = (req, res) => {
+  const updateUser = async (req, res) => {
     const userId = req.params.userId; // accepts a user's primary key (id) as a path parameter
     const userUpdates = req.body;
     dao.updateUser(userId, userUpdates); // passes in user id and request body
-    const currentUser = dao.findUserById(userId); // if a user updates their profile,
+    const currentUser = await dao.findUserById(userId); // if a user updates their profile,
     req.session["currentUser"] = currentUser; // then the session is kept in synch
     res.json(currentUser); // responds with status
   };
@@ -86,7 +101,7 @@ export default function UserRoutes(app) {
   app.post("/api/users/signout", signout);
 
   // gets the courses the current user is enrolled in
-  const findCoursesForEnrolledUser = (req, res) => {
+  const findCoursesForEnrolledUser = async (req, res) => {
     let { userId } = req.params;
     if (userId === "current") {
       const currentUser = req.session["currentUser"];
@@ -96,19 +111,19 @@ export default function UserRoutes(app) {
       }
       userId = currentUser._id;
     }
-    const courses = courseDao.findCoursesForEnrolledUser(userId);
+    const courses = await courseDao.findCoursesForEnrolledUser(userId);
     res.json(courses);
   };
   app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
 
   // enrolls the current user in the new course
-  const createCourse = (req, res) => {
+  const createCourse = async (req, res) => {
     const currentUser = req.session["currentUser"];
     if (!currentUser) {
       return res.status(401).json({ message: "Not logged in" });
     }
 
-    const newCourse = courseDao.createCourse(req.body);
+    const newCourse = await courseDao.createCourse(req.body);
     enrollmentsDao.enrollUserInCourse(currentUser._id, newCourse._id);
     res.json(newCourse);
   };
