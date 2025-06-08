@@ -679,7 +679,7 @@ export default [
     ]
   },
   {
-    "_id": "EEAM2000-1",
+    "_id": "EEAM2000-2",
     "name": "Week 2 - Portfolios",
     "description": "Portfolios",
     "course": "EEAM2000",
@@ -718,7 +718,7 @@ export default [
     ]
   },
   {
-    "_id": "EEAM2000-2",
+    "_id": "EEAM2000-3",
     "name": "Week 3 - Job Search & Cover Letters",
     "description": "Job Search and Cover Letters",
     "course": "EEAM2000",
