@@ -7,9 +7,9 @@ import model from "./model.js";
 // used for sign up operation
 export const createUser = async (user) => {
   const newUser = { ...user, _id: uuidv4() };
-  const createdUser = await model.create(newUser);
-  return createdUser;
-};
+  return await model.create(newUser);
+}
+
 
 // used for finding users by id, role, name
 export const findAllUsers = async () => await model.find();
@@ -37,3 +37,5 @@ export const updateUser = async (userId, user) =>
 
 export const deleteUser = async (userId) =>
   await model.deleteOne({ _id: userId });
+
+
