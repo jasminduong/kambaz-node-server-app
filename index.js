@@ -27,18 +27,17 @@ app.use(
   })
 );
 const sessionOptions = {
-  secret: process.env.SESSION_SECRET || "kambaz",
+  secret: process.env.SESSION_SECRET || "kambaz-secret-key-change-in-production",
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    sameSite: "lax",
+    secure: false,
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 
+  },
+  name: 'kambaz.session'
 };
-if (process.env.NODE_ENV !== "development") {
-  // in production turn on proxy support configure cookies for remote server
-  sessionOptions.proxy = true;
-  sessionOptions.cookie = {
-    sameSite: "none",
-    secure: true,
-  };
-}
 app.use(session(sessionOptions));
 
 app.use(express.json()); // encoding the data as JSON in the HTTP request body allows for arbitrarily large amounts of data and secure data encryption

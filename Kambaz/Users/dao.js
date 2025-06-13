@@ -10,7 +10,6 @@ export const createUser = async (user) => {
   return await model.create(newUser);
 }
 
-
 // used for finding users by id, role, name
 export const findAllUsers = async () => await model.find();
 export const findUserById = async (userId) => await model.findById(userId);
@@ -18,7 +17,7 @@ export const findUserById = async (userId) => await model.findById(userId);
 export const findUsersByRole = (role) => model.find({ role: role }); 
 
 export const findUsersByPartialName = (partialName) => {
-  const regex = new RegExp(partialName, "i"); // 'i' makes it case-insensitive
+  const regex = new RegExp(partialName, "i"); 
   return model.find({
     $or: [{ firstName: { $regex: regex } }, { lastName: { $regex: regex } }],
   });
