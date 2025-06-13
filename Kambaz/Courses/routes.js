@@ -1,6 +1,8 @@
 import * as dao from "./dao.js";
 import * as modulesDao from "../Modules/dao.js";
 import * as assignmentsDao from "../Assignments/dao.js";
+import * as enrollmentsDao from "../Enrollments/dao.js"; 
+import * as usersDao from "../Users/dao.js";
 
 // CourseRoutes expose the database operations of courses through a RESTful API
 export default function CourseRoutes(app) {
@@ -53,7 +55,6 @@ export default function CourseRoutes(app) {
       const status = await dao.updateCourse(courseId, courseUpdates);
       res.json({ ...courseUpdates, _id: courseId });
     } catch (error) {
-      console.error("Error updating course:", error);
       res.status(500).json({ error: "Server error updating course" });
     }
   });
@@ -94,10 +95,29 @@ export default function CourseRoutes(app) {
     res.send(newAssignment);
   });
 
+  // find users for a course
   const findUsersForCourse = async (req, res) => {
     const { cid } = req.params;
-    const users = await enrollmentsDao.findUsersForCourse(cid);
-    res.json(users);
+    
+    try {
+      // get enrollments for this course
+      const enrollments = await enrollmentsDao.findUsersForCourse(cid);
+      
+      // extract user IDs from enrollments
+      const userIds = enrollments.map(e => e.user);
+      
+      // get full user data for each enrolled user
+      const users = await Promise.all(
+        userIds.map(userId => usersDao.findUserById(userId))
+      );
+      
+      // filter out any null results
+      const validUsers = users.filter(user => user !== null);
+      
+      res.json(validUsers);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to find users for course" });
+    }
   };
   app.get("/api/courses/:cid/users", findUsersForCourse);
 }

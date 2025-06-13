@@ -14,11 +14,11 @@ export const createUser = async (user) => {
 export const findAllUsers = async () => await model.find();
 export const findUserById = async (userId) => await model.findById(userId);
 
-export const findUsersByRole = (role) => model.find({ role: role }); 
+export const findUsersByRole = async (role) => await model.find({ role: role }); 
 
-export const findUsersByPartialName = (partialName) => {
+export const findUsersByPartialName = async (partialName) => {
   const regex = new RegExp(partialName, "i"); 
-  return model.find({
+  return await model.find({
     $or: [{ firstName: { $regex: regex } }, { lastName: { $regex: regex } }],
   });
 };
