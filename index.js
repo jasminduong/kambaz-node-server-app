@@ -11,6 +11,8 @@ import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kambaz/Enrollments/routes.js";
 import mongoose from "mongoose";
 
+console.log("🔥🔥🔥 HELLO FROM RENDER! APP IS STARTING! 🔥🔥🔥");
+
 const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
 mongoose.connect(CONNECTION_STRING);
 // Add this debug code here:
