@@ -9,6 +9,28 @@ import CourseRoutes from "./Kambaz/Courses/routes.js";
 import ModuleRoutes from "./Kambaz/Modules/routes.js";
 import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kambaz/Enrollments/routes.js";
+import mongoose from "mongoose";
+
+console.log("🔥🔥🔥 HELLO FROM RENDER! APP IS STARTING! 🔥🔥🔥");
+
+const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
+mongoose.connect(CONNECTION_STRING);
+// Add this debug code here:
+mongoose.connection.on('connected', () => {
+  console.log('✅ Connected to MongoDB successfully!');
+  console.log('🔍 Database name:', mongoose.connection.name);
+  console.log('🔍 Host:', mongoose.connection.host); 
+  console.log('🔍 Is Atlas?', CONNECTION_STRING.includes('mongodb+srv') ? 'YES' : 'NO');
+  console.log('🔍 Connection string (hidden):', CONNECTION_STRING.replace(/\/\/.*:.*@/, '//***:***@'));
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('🔌 Disconnected from MongoDB');
+});
 
 const app = express();
 const allowedOrigins = [
@@ -23,18 +45,17 @@ app.use(
   })
 );
 const sessionOptions = {
-  secret: process.env.SESSION_SECRET || "kambaz",
+  secret: process.env.SESSION_SECRET || "kambaz-secret-key-change-in-production",
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    sameSite: "lax",
+    secure: false,
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 
+  },
+  name: 'kambaz.session'
 };
-if (process.env.NODE_ENV !== "development") {
-  // in production turn on proxy support configure cookies for remote server
-  sessionOptions.proxy = true;
-  sessionOptions.cookie = {
-    sameSite: "none",
-    secure: true,
-  };
-}
 app.use(session(sessionOptions));
 
 app.use(express.json()); // encoding the data as JSON in the HTTP request body allows for arbitrarily large amounts of data and secure data encryption

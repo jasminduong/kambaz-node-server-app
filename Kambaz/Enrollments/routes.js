@@ -10,10 +10,18 @@ export default function EnrollmentsRoutes(app) {
   });
 
   // unenrolls user in a course
-  app.delete("/api/enrollments", async (req, res) => {
-    const { user, course } = req.body;
-    const status = await enrollmentsDao.unenrollUserFromCourse(user, course);
-    res.send(status);
+  app.delete("/api/enrollments/:userId/:courseId", async (req, res) => {
+    const { userId, courseId } = req.params;
+
+    try {
+      const result = await enrollmentsDao.unenrollUserFromCourse(
+        userId,
+        courseId
+      );
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to unenroll user" });
+    }
   });
 
   // gets all enrollments for a user

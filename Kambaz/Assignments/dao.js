@@ -1,36 +1,53 @@
-import Database from "../Database/index.js";
 import { v4 as uuidv4 } from "uuid";
+import model from "./model.js";
 
 // Assignments dao.js implements various CRUD operations for handling the assignments array in the Database
 
 // function to find assignments by its course id
-export function findAssignmentsForCourse(courseId) {
-  const { assignments } = Database;
-  return assignments.filter((assignment) => assignment.course === courseId);
+export async function findAssignmentsForCourse(courseId) {
+  try {
+    const result = await model.find({ course: courseId });
+    return result;
+  } catch (error) {
+    console.error("Error finding assignments:", error);
+    throw error;
+  }
 }
 
 // function to create a new assignment
-export function createAssignment(assignment) {
+export async function createAssignment(assignment) {
+
   const newAssignment = { ...assignment, _id: uuidv4() };
-  Database.assignments = [...Database.assignments, newAssignment];
-  return newAssignment;
+
+  try {
+    const result = await model.create(newAssignment);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
-// function to updates an assignment
-export function updateAssignment(assignmentId, assignmentUpdates) {
-  const { assignments } = Database;
-  const assignment = assignments.find(
-    (assignment) => assignment._id === assignmentId
-  );
-  Object.assign(assignment, assignmentUpdates);
-  return assignment;
+// function to update an assignment
+export async function updateAssignment(assignmentId, assignmentUpdates) {
+  try {
+    const result = await model.updateOne(
+      { _id: assignmentId },
+      { $set: assignmentUpdates }
+    );
+    return result;
+  } catch (error) {
+    console.error("Error updating assignment:", error);
+    throw error;
+  }
 }
 
 // function to delete an assignment
-export function deleteAssignment(assignmentId) {
-  console.log("Deleting assignment with ID:", assignmentId);
-  const { assignments } = Database;
-  Database.assignments = assignments.filter(
-    (assignment) => assignment._id !== assignmentId
-  );
+export async function deleteAssignment(assignmentId) {
+  try {
+    const result = await model.deleteOne({ _id: assignmentId });
+    return result;
+  } catch (error) {
+    console.error("Error deleting assignment:", error);
+    throw error;
+  }
 }
