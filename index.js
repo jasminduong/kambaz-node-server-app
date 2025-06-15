@@ -10,7 +10,6 @@ import ModuleRoutes from "./Kambaz/Modules/routes.js";
 import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kambaz/Enrollments/routes.js";
 import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
 
 const CONNECTION_STRING =
   process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz";
@@ -34,14 +33,10 @@ const sessionOptions = {
   secret:
     process.env.SESSION_SECRET || "kambaz-secret-key-change-in-production",
   resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: CONNECTION_STRING, // Uses your existing connection
-    collectionName: "sessions",
-  }),
+  saveUninitialized: true, 
   cookie: {
-    sameSite: "none",
-    secure: true,
+    sameSite: "lax", 
+    secure: false, 
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
   },
