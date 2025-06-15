@@ -63,16 +63,26 @@ export default function UserRoutes(app) {
 
   // SIGNIN - logs in the user if credentials match
   const signin = async (req, res) => {
-    const { username, password } = req.body; // extracts properties username and password from the request's body
-    const currentUser = await dao.findUserByCredentials(username, password); // and passess them to the findUserByCredentials function implemented by the DAO
+    console.log("=== SIGNIN ROUTE DEBUG ===");
+    console.log("Request body:", req.body);
+    console.log("Session before signin:", req.session);
+    console.log("Session ID:", req.sessionID);
+
+    const { username, password } = req.body;
+    const currentUser = await dao.findUserByCredentials(username, password);
+
+    console.log("User found:", currentUser);
+
     if (currentUser) {
-      req.session["currentUser"] = currentUser; // the resulting user is stored in the server's currentUser  session
-      res.json(currentUser); // the user is then sent to the client in the response
+      req.session["currentUser"] = currentUser;
+      console.log("User saved to session:", req.session["currentUser"]);
+      console.log("Session after saving user:", req.session);
+      res.json(currentUser);
     } else {
+      console.log("Invalid credentials");
       res.status(401).json({ message: "Unable to login. Try again later." });
     }
   };
-  app.post("/api/users/signin", signin);
 
   // PROFILE
   const profile = async (req, res) => {
