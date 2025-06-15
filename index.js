@@ -29,35 +29,19 @@ app.use(
   })
 );
 
+// SIMPLIFIED SESSION CONFIG
 const sessionOptions = {
-  secret:
-    process.env.SESSION_SECRET || "kambaz-secret-key-change-in-production",
+  secret: "kambaz-secret-key-for-school-project",
   resave: false,
-  saveUninitialized: true, 
+  saveUninitialized: false,
   cookie: {
-    sameSite: "lax", 
-    secure: false, 
+    secure: false,
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
   },
-  name: "kambaz.session",
 };
 
 app.use(session(sessionOptions));
-
-// ADD THIS DEBUG MIDDLEWARE
-app.use((req, res, next) => {
-  console.log("=== SESSION DEBUG ===");
-  console.log("URL:", req.url);
-  console.log("Method:", req.method);
-  console.log("Origin:", req.headers.origin);
-  console.log("Session ID:", req.sessionID);
-  console.log("Session exists:", !!req.session);
-  console.log("Current user:", req.session?.currentUser);
-  console.log("Cookies:", req.headers.cookie);
-  console.log("===================");
-  next();
-});
 
 app.use(express.json());
 
